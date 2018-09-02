@@ -7,8 +7,7 @@ class Filters extends Component {
                 if(!isExist.length) {
                     return <li className="filter-item" key={filter} name={filter} onClick={this.props.handleClick}>{filter}</li> 
                 }
-            }
-        );
+            });
         return (
             <div className="dropdown-filters">
                 <ul className={this.props.visibility + ' list-style-none'}>

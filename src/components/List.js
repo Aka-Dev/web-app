@@ -11,8 +11,7 @@ class List extends Component {
         </tr>));
         
         return (
-            <div className="">
-                <h2>List</h2>
+            <div>
                 <table>
                     <thead>
                         <tr>

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import SearchBox from '../components/SearchBox';
 import List from '../components/List';
+import SelectedFilter from '../components/SelectedFilter';
+import Filters from '../components/Filters';
 import axios from 'axios';
 
 
@@ -19,6 +21,7 @@ class App extends Component {
       items: []
     };
   
+    this.inputSearchBox = React.createRef();
     // My FUNCTION
     this.handleFocus = this.handleFocus.bind(this);
     this.handleClick = this.handleClick.bind(this);
@@ -83,6 +86,8 @@ class App extends Component {
       items
     });
 
+    // Clear input Search 
+    this.inputSearchBox.current.value = '';
   }
 
   //DELTEFILTERITEM
@@ -151,16 +156,24 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Search Box</h1>
         </header>
-        <SearchBox inputSearch={this.inputSearch}
-                   listFilters={this.state.items}  
-                   selectedFilter={this.state.selectedFilter} 
-                   visibility={this.state.visibility}                    
-                   handleFocus={this.handleFocus}
-                   handleChange={this.handleChange} 
-                   handleClick={this.handleClick}
-                   deleteFilterItem={this.deleteFilterItem}
-                   handleBlur={this.handleBlur} 
-                   handleKeyPress={this.handleKeyPress} />
+        <div className="search-box">
+
+          <SelectedFilter selectedFilter={this.state.selectedFilter}
+                          deleteFilterItem={this.deleteFilterItem}/> 
+
+          <div className="dropdown-search-box">
+            <input type='text' className='input-search-box' name='search-box' 
+                    ref={this.inputSearchBox}
+                    onClick={this.handleFocus}
+                    onChange={this.handleChange}
+                    onKeyPress={this.handleKeyPress}/>
+
+            <Filters listFilters={this.state.items} 
+                    visibility={this.state.visibility} 
+                    selectedFilter={this.state.selectedFilter}
+                    handleClick={this.handleClick} />
+          </div>
+        </div>
 
         <List users={this.state.usersShadow} />
       </div>
