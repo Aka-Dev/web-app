@@ -4,9 +4,8 @@ import Close from '../svg/cancel.svg';
 class SelectedFilter extends Component {
     render() {
         const selectedFilter = this.props.selectedFilter.map((filter, index) =>                     
-            <li key={index} name={filter.name} >
-                <div>{filter.name}<span className="close" onClick={this.props.deleteFilterItem} data-index={index}><img src={Close} title="close" alt="close" /></span></div>
-                {filter.value}
+            <li key={index} name={filter.name} className="flex-container">
+                <div className="selected-item flex-container"><span>{filter.name}</span><span className="selected-item-value">{filter.value}</span><span className="close" onClick={this.props.deleteFilterItem} data-index={index}><img src={Close} title="close" alt="close" /></span></div>
             </li>
         );
         return (

@@ -85,13 +85,17 @@
   align-items: center;
 }
 
-.ul-selected-filter li {
+.selected-item {
   padding: 5px 10px;
   margin-right: 5px;
   cursor: pointer;
   background-color: gainsboro;
   border-bottom: 1px solid #73afea;
   border-radius: 9px;
+}
+
+.selected-item-value {
+  margin-left: 10px;
 }
 
 .close img{
