@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 
 class Filters extends Component {
     render() {
-        const ListFilters = this.props.listFilter.map((filter) => 
-            <li className="filter-item" key={filter} name={filter} onClick={this.props.handleClick}>{filter}</li> 
+        const ListFilters = this.props.listFilters.map((filter) => {
+                let isExist = this.props.selectedFilter.filter((item) => (filter === item.name));
+                if(!isExist.length) {
+                    return <li className="filter-item" key={filter} name={filter} onClick={this.props.handleClick}>{filter}</li> 
+                }
+            }
         );
-        console.log(ListFilters);
         return (
             <div className="dropdown-filters">
                 <ul className={this.props.visibility + ' list-style-none'}>

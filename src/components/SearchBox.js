@@ -15,23 +15,13 @@ class SearchBox extends Component {
 
         this.searchInput = React.createRef(); 
         this.handleFocus = this.handleFocus.bind(this);
-        this.handleChange = this.handleChange.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.deleteFilterItem = this.deleteFilterItem.bind(this);
     }
 
     handleFocus() {
         this.setState({
-            visibility: 'show',
-            filters: this.state.filters
-        });
-    }
-
-    handleChange(event) {
-        const filters = this.state.listFilters.filter((item) => 
-                        item.toLowerCase().includes(event.target.value.toLowerCase()));
-
-        this.setState({
-            filters
+            visibility: 'show'
         });
     }
 
@@ -50,37 +40,34 @@ class SearchBox extends Component {
         
         this.searchInput.current.value = '';
 
-        let filters =  this.state.filters.filter((filter) => {
-                let tab = selectedFilter.filter((item) => item.name === filter);
-                return (tab.length === 0); 
-            }
-        );
 
         this.setState({
             selectedFilter,
-            filters,
             visibility: 'hide',
             hasSelectedFilter: !this.state.hasSelectedFilter
         });
     }
 
-    componentDidMount() {
+    deleteFilterItem(event) {
+        let selectedFilter = this.state.selectedFilter, 
+            index = event.currentTarget.getAttribute('data-index');
+        selectedFilter.splice(index, 1);
         this.setState({
-            filters: this.state.listFilters
+            selectedFilter
         });
     }
-    render() {
 
+    render() {
         return (
             <div className="search-box">
-                <SelectedFilter selectedFilter={this.state.selectedFilter}/>
+                <SelectedFilter selectedFilter={this.state.selectedFilter}
+                                deleteFilterItem={this.deleteFilterItem}/>
                 <div className="dropdown-search-box">
                     <input type='text' className='input-search-box' name='search-box' 
                         ref={this.searchInput}
-                        onChange={this.handleChange} 
                         onClick={this.handleFocus}/>
 
-                    <Filters listFilter={this.state.filters} 
+                    <Filters listFilters={this.state.listFilters} 
                             visibility={this.state.visibility} 
                             selectedFilter={this.state.selectedFilter}
                             handleClick={this.handleClick} />

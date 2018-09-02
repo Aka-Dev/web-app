@@ -92,5 +92,9 @@
   background-color: gainsboro;
   border-bottom: 1px solid #73afea;
   border-radius: 9px;
+}
 
+.close img{
+  width: 8px;
+  margin-left: 5px;
 }
