@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import SearchBox from '../components/SearchBox';
 import List from '../components/List';
 import SelectedFilter from '../components/SelectedFilter';
 import Filters from '../components/Filters';
@@ -13,7 +12,7 @@ class App extends Component {
     this.state = {
       users: [],
       usersShadow: [],
-      selectedFilter: [],
+      selectedFilters: [],
       hasSelectedFilter: false,
       visibility: 'hide',
       searchInputValue: '',
@@ -21,35 +20,58 @@ class App extends Component {
       items: []
     };
   
+    // Ref of input search
     this.inputSearchBox = React.createRef();
-    // My FUNCTION
+
+    // My FUNCTIONS
     this.handleFocus = this.handleFocus.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.deleteFilterItem = this.deleteFilterItem.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.filterUsers = this.filterUsers.bind(this);
 
   }
 
-  // HANDLEFOCUS
+  // Filter users
+  filterUsers() {
+    return (this.state.users.filter((user) => {
+      let i = false;
+
+        for(let filter of this.state.selectedFilters) {
+          let filterValue = filter.value.toLowerCase(),
+              userValue = user[filter.name].toLowerCase();
+          if (filterValue === userValue) {
+            i = true;
+          } else {
+            i = false;
+            break;
+          }
+        }
+        return i;
+      })
+    );
+  }
+
+  // On Focus display the dropdown of filters items
   handleFocus() {
     this.setState({
         visibility: (this.state.hasSelectedFilter) ? 'hide' : 'show'
     });
   }
 
-  // HANDLECHANGE
+  
   handleChange(event) {
     const index = event.target.value.indexOf(' '),
           inputSearchValue = event.target.value.trim(),
-          selectedFilter = this.state.selectedFilter;
+          selectedFilters = this.state.selectedFilters;
 
     if(index > 0 && this.state.hasSelectedFilter) {
-        selectedFilter[selectedFilter.length-1].value = inputSearchValue;
+        selectedFilters[selectedFilters.length-1].value = inputSearchValue;
         event.target.value = '';
         this.setState({
-          selectedFilter,
+          selectedFilters,
           hasSelectedFilter: false,
           visibility: 'show'
         });
@@ -62,25 +84,35 @@ class App extends Component {
           items
       });
     }
+    
+    // Change Placeholder in fact of filter name or value
+    this.inputSearchBox.current.placeholder = (this.state.hasSelectedFilter ) ? 'Enter Filter Name' : 'Enter Filter Value';
+    
+    // If search input is empty and no filter is selected list all users
+    if(inputSearchValue === '' && !this.state.selectedFilters.length) {
+      this.setState({
+        usersShadow: this.state.users
+      });
+    }
 
   }
 
   // HANDLECLICK
   handleClick(event) {
-    const selectedFilter = this.state.selectedFilter;
+    const selectedFilters = this.state.selectedFilters;
 
-    selectedFilter.push({
+    selectedFilters.push({
         name: event.target.innerHTML,
         value: ''
     });
     
-    // Check if filter exist in the list of selected filter
+    // Check if filter item exist in the list of selected filters items
     const items = this.state.items.filter((item) => (
-      selectedFilter.filter((filter) => (filter === item))
+      selectedFilters.filter((filter) => (filter === item))
     ));
 
     this.setState({
-      selectedFilter,
+      selectedFilters,
       visibility: 'hide',
       hasSelectedFilter: true,
       items
@@ -88,50 +120,50 @@ class App extends Component {
 
     // Clear input Search 
     this.inputSearchBox.current.value = '';
+    // Change Placeholder in fact of filter name or value
+    this.inputSearchBox.current.placeholder = (this.state.hasSelectedFilter) ? 'Enter Filter Name' : 'Enter Filter Value';
   }
 
   //DELTEFILTERITEM
   deleteFilterItem(event) {
-    let selectedFilter = this.state.selectedFilter, 
+    let selectedFilters = this.state.selectedFilters, 
         index = event.currentTarget.getAttribute('data-index');
     
-    selectedFilter.splice(index, 1);
+    selectedFilters.splice(index, 1);
 
     // Check if filter exist in the list of selected filter
     const items = this.state.listFilters.filter((item) => (
-      selectedFilter.filter((filter) => (filter === item))
+      selectedFilters.filter((filter) => (filter === item))
     ));
 
     this.setState({
-      usersShadow: (this.state.selectedFilter.length) ? this.state.usersShadow : this.state.users, 
-      selectedFilter,
+      usersShadow: (this.state.selectedFilters.length) ? this.filterUsers() : this.state.users, 
+      selectedFilters,
       hasSelectedFilter: false,
-      items
+      items,
+      visibility: 'hide'
     });
+    this.inputSearchBox.current.placeholder = 'Enter Filter Name';
   }
 
   // HANDLEBLUR
   handleBlur(event) {
-    this.setState({
-      visibility: (event.currentTarget.className !== 'search-box') ? 'hide' : this.state.visibility
-    });
+    if(event.target.className !== 'input-search-box') {
+      this.setState({
+        visibility: 'hide'
+      });
+    }
   }
 
   // KeyPress
   handleKeyPress(event) {
     if(event.key === 'Enter') {
-      const usersShadow = this.state.users.filter((user) => {
-        let i = false;
-        this.state.selectedFilter.forEach((filter) => {
-          i = (filter.value == user[filter.name]) ? true : false;
-        });
-        return i;
-
-      });
-
+      const usersShadow = this.filterUsers();
+      
       this.setState({
         usersShadow
       });
+      
     }
   }
 
@@ -145,24 +177,25 @@ class App extends Component {
           usersShadow: users
         });
     });
+
     this.setState({
       items: this.state.listFilters
-    })
+    });
   }
 
   render() {
     return (
-      <div className="App">
+      <div className="App" onClick={this.handleBlur}>
         <header className="App-header">
           <h1 className="App-title">Search Box</h1>
         </header>
         <div className="search-box">
 
-          <SelectedFilter selectedFilter={this.state.selectedFilter}
+          <SelectedFilter selectedFilters={this.state.selectedFilters}
                           deleteFilterItem={this.deleteFilterItem}/> 
 
           <div className="dropdown-search-box">
-            <input type='text' className='input-search-box' name='search-box' 
+            <input type="text" className="input-search-box" name="search-box" placeholder="Enter Filter Name"
                     ref={this.inputSearchBox}
                     onClick={this.handleFocus}
                     onChange={this.handleChange}
@@ -170,7 +203,7 @@ class App extends Component {
 
             <Filters listFilters={this.state.items} 
                     visibility={this.state.visibility} 
-                    selectedFilter={this.state.selectedFilter}
+                    selectedFilters={this.state.selectedFilters}
                     handleClick={this.handleClick} />
           </div>
         </div>

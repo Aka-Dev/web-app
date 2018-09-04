@@ -9,7 +9,7 @@ class List extends Component {
             <td>{person.coutry}</td>
             <td>{person.email}</td>
         </tr>));
-        
+            
         return (
             <div>
                 <table>
