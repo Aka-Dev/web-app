@@ -63,6 +63,7 @@ body {
 .input-search-box,
 .input-search-box:focus {
   border: 0;
+  outline: none;
 }
 
 .input-search-box {
